@@ -15,7 +15,7 @@ interface StrategyOption {
 const STRATEGIES: StrategyOption[] = [
   {
     id: "trend",
-    label: "趋势跟随策略 (SMA30)",
+    label: "趋势跟随策略 (EMA30)",
     description: "监控均线信号，自动进出场并维护止损/止盈",
     component: TrendApp,
   },

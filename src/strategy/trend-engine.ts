@@ -13,7 +13,7 @@ import {
   calcTrailingActivationPrice,
   computeBollingerBandwidth,
   getPosition,
-  getSMA,
+  getEMA,
   type PositionSnapshot,
 } from "../utils/strategy";
 import { computePositionPnl } from "../utils/pnl";
@@ -40,7 +40,7 @@ export interface TrendEngineSnapshot {
   ready: boolean;
   symbol: string;
   lastPrice: number | null;
-  sma30: number | null;
+  ema30: number | null;
   bollingerBandwidth: number | null;
   trend: "做多" | "做空" | "无信号";
   position: PositionSnapshot;
@@ -84,7 +84,7 @@ export class TrendEngine {
   private timer: ReturnType<typeof setInterval> | null = null;
   private processing = false;
   private lastPrice: number | null = null;
-  private lastSma30: number | null = null;
+  private lastEma30: number | null = null;
   private lastBollingerBandwidth: number | null = null;
   private totalProfit = 0;
   private totalTrades = 0;
@@ -280,8 +280,8 @@ export class TrendEngine {
         return;
       }
       this.logStartupState();
-      const sma30 = getSMA(this.klineSnapshot, 30);
-      if (sma30 == null) {
+      const ema30 = getEMA(this.klineSnapshot, 30);
+      if (ema30 == null) {
         return;
       }
       const bollingerBandwidth = computeBollingerBandwidth(
@@ -296,7 +296,7 @@ export class TrendEngine {
 
       if (Math.abs(position.positionAmt) < 1e-5) {
         if (!this.rateLimit.shouldBlockEntries()) {
-          await this.handleOpenPosition(price, sma30, bollingerBandwidth);
+          await this.handleOpenPosition(price, ema30, bollingerBandwidth);
         }
       } else {
         const result = await this.handlePositionManagement(position, price);
@@ -307,7 +307,7 @@ export class TrendEngine {
 
       this.sessionVolume.update(position, price);
       this.trackPositionLifecycle(position, price);
-      this.lastSma30 = sma30;
+      this.lastEma30 = ema30;
       this.lastPrice = price;
       this.emitUpdate();
     } catch (error) {
@@ -360,13 +360,13 @@ export class TrendEngine {
 
   private async handleOpenPosition(
     currentPrice: number,
-    currentSma: number,
+    currentEma: number,
     currentBandwidth: number | null
   ): Promise<void> {
     this.entryPricePendingLogged = false;
     const now = Date.now();
     const currentMinute = Math.floor(now / 60_000);
-    // 止损后的冷却期：60s 内不允许基于 SMA 穿越再次入场
+    // 止损后的冷却期：60s 内不允许基于 EMA 穿越再次入场
     if (this.lastStopLossAt != null && now - this.lastStopLossAt < 60_000) {
       const remaining = Math.max(0, 60_000 - (now - this.lastStopLossAt));
       this.tradeLog.push("info", `止损后冷却中 ${(remaining / 1000).toFixed(0)}s，忽略入场信号`);
@@ -374,7 +374,7 @@ export class TrendEngine {
     }
     // 同一分钟只允许一次入场
     if (this.lastEntryMinute != null && this.lastEntryMinute === currentMinute) {
-      this.tradeLog.push("info", "本分钟已入场，忽略新的 SMA 入场信号");
+      this.tradeLog.push("info", "本分钟已入场，忽略新的 EMA 入场信号");
       return;
     }
     if (
@@ -415,11 +415,11 @@ export class TrendEngine {
         }
       }
     }
-    if (this.lastPrice > currentSma && currentPrice < currentSma) {
-      await this.submitMarketOrder("SELL", currentPrice, "下穿SMA30，市价开空");
+    if (this.lastPrice > currentEma && currentPrice < currentEma) {
+      await this.submitMarketOrder("SELL", currentPrice, "下穿EMA30，市价开空");
       this.lastEntryMinute = currentMinute;
-    } else if (this.lastPrice < currentSma && currentPrice > currentSma) {
-      await this.submitMarketOrder("BUY", currentPrice, "上穿SMA30，市价开多");
+    } else if (this.lastPrice < currentEma && currentPrice > currentEma) {
+      await this.submitMarketOrder("BUY", currentPrice, "上穿EMA30，市价开多");
       this.lastEntryMinute = currentMinute;
     }
   }
@@ -862,12 +862,12 @@ export class TrendEngine {
   private buildSnapshot(): TrendEngineSnapshot {
     const position = getPosition(this.accountSnapshot, this.config.symbol);
     const price = this.tickerSnapshot ? Number(this.tickerSnapshot.lastPrice) : null;
-    const sma30 = this.lastSma30;
-    const trend = price == null || sma30 == null
+    const ema30 = this.lastEma30;
+    const trend = price == null || ema30 == null
       ? "无信号"
-      : price > sma30
+      : price > ema30
       ? "做多"
-      : price < sma30
+      : price < ema30
       ? "做空"
       : "无信号";
     const pnl = price != null ? computePositionPnl(position, price, price) : 0;
@@ -875,7 +875,7 @@ export class TrendEngine {
       ready: this.isReady(),
       symbol: this.config.symbol,
       lastPrice: price,
-      sma30,
+      ema30,
       bollingerBandwidth: this.lastBollingerBandwidth,
       trend,
       position,

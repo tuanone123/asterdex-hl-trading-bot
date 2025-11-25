@@ -92,7 +92,7 @@ export function TrendApp({ onExit }: TrendAppProps) {
     );
   }
 
-  const { position, tradeLog, openOrders, trend, ready, lastPrice, sma30, sessionVolume } = snapshot;
+  const { position, tradeLog, openOrders, trend, ready, lastPrice, ema30, sessionVolume } = snapshot;
   const hasPosition = Math.abs(position.positionAmt) > 1e-5;
   const lastLogs = tradeLog.slice(-5);
   const sortedOrders = [...openOrders].sort((a, b) => (Number(b.updateTime ?? 0) - Number(a.updateTime ?? 0)) || Number(b.orderId) - Number(a.orderId));
@@ -120,7 +120,7 @@ export function TrendApp({ onExit }: TrendAppProps) {
       <Box flexDirection="column" marginBottom={1}>
         <Text color="cyanBright">Trend Strategy Dashboard</Text>
         <Text>
-          交易所: {exchangeName} ｜ 交易对: {snapshot.symbol} ｜ 最近价格: {formatNumber(lastPrice, 2)} ｜ SMA30: {formatNumber(sma30, 2)} ｜ 趋势: {trend}
+          交易所: {exchangeName} ｜ 交易对: {snapshot.symbol} ｜ 最近价格: {formatNumber(lastPrice, 2)} ｜ EMA30: {formatNumber(ema30, 2)} ｜ 趋势: {trend}
         </Text>
         <Text color="gray">状态: {ready ? "实时运行" : READY_MESSAGE} ｜ 按 Esc 返回策略选择</Text>
       </Box>

@@ -38,6 +38,27 @@ export function getSMA(values: AsterKline[], length: number): number | null {
   return sum / closes.length;
 }
 
+export function getEMA(values: AsterKline[], length: number): number | null {
+  if (!values || values.length < length) return null;
+  const closes = values.map((k) => Number(k.close));
+  if (closes.some((close) => !Number.isFinite(close))) return null;
+  
+  // Calculate smoothing factor
+  const multiplier = 2 / (length + 1);
+  
+  // Start with SMA for the first period
+  const initialPeriod = closes.slice(0, length);
+  const initialSum = initialPeriod.reduce((acc, current) => acc + current, 0);
+  let ema = initialSum / length;
+  
+  // Apply EMA formula for remaining values
+  for (let i = length; i < closes.length; i++) {
+    ema = (closes[i] - ema) * multiplier + ema;
+  }
+  
+  return Number.isFinite(ema) ? ema : null;
+}
+
 export function calcStopLossPrice(entryPrice: number, qty: number, side: "long" | "short", loss: number): number {
   if (side === "long") {
     return entryPrice - loss / qty;
