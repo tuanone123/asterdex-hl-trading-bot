@@ -1,8 +1,15 @@
+# AsterDEX HL Trading Bot 🚀
 
+**High-Performance Crypto Trading Bot for AsterDEX and Hyperliquid Perpetual Contracts**  
+Automate your trading with two built-in agents: an **SMA30 trend follower** for momentum strategies and a **dual-sided market maker** for consistent liquidity. Perfect for **crypto traders, algorithmic trading, and DeFi strategies**.
 
-# Aster & HL Trading Bot
+## 🔥 Features
 
-High-Performance Trading Bot for Aster and Hyperliquid Perpetual Contracts – Deploy a production-ready workstation with two built-in trading agents: an SMA30 trend follower for automated momentum strategies, and a dual-sided market maker for consistent liquidity provision. The command-line interface (CLI) is lightweight and efficient, synchronizes risk management data directly from the exchange, and automatically recovers from restarts or disconnects. Perfect for crypto traders, algorithmic trading, and automated DeFi strategies on AsterDEX and Hyperliquid.
+- **SMA30 Trend Follower** – Automates momentum-based trades  
+- **Dual-Sided Market Maker** – Provides liquidity on both sides of the order book  
+- **Robust CLI** – Lightweight command-line interface, synchronizes risk from the exchange  
+- **Auto Recovery** – Recovers from restarts or disconnections automatically  
+- **Production Ready** – Designed for real trading scenarios
 
 * [Aster 30% Fee Discount Referral Link](https://www.asterdex.com/en/referral/FmBN1g)
 * [GRVT Fee Discount Referral Link](https://www.asterdex.com/en/referral/FmBN1g)
