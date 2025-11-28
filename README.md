@@ -179,7 +179,6 @@ Join our Hotlike Trading Community on Telegram:
 https://t.me/hotliketut￼
 
 Share feedback, discuss strategies, and get help running your bot.
-- Telegram: [@moooncity]
-- (https://t.me/moooncity)
+
 
   crypto-bot, trading-bot, AsterDEX, Hyperliquid, algorithmic-trading, DeFi
