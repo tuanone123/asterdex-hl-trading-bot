@@ -1,5 +1,6 @@
 # AsterDEX HL Trading Bot 🚀
 * [Aster 30% Fee Discount Referral Link](https://www.asterdex.com/en/referral/FmBN1g)
+  
 **High-Performance Crypto Trading Bot for AsterDEX and Hyperliquid Perpetual Contracts**  
 Automate your trading with two built-in agents: an **SMA30 trend follower** for momentum strategies and a **dual-sided market maker** for consistent liquidity. Perfect for **crypto traders, algorithmic trading, and DeFi strategies**.
 
